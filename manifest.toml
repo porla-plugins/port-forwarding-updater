@@ -1,0 +1,7 @@
+main = "plugin.lua"
+
+[plugin]
+name = "port-forwarding-updater"
+version = "0.1"
+authors = ["l1meju1ce"]
+homepage = "https://github.com/l1meju1ce/porla-plugins/port-forwarding-monitor"
