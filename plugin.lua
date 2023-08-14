@@ -6,14 +6,15 @@ local log    = require("log")
 
 local cron_jobs = {}
 
-local function checkport(session_name, target_interface, file_path)
+local function checkport(session_name, target_interface, file_path, replace_existing)
     local current_port = port.get_listening(session_name, target_interface)
     local target_port  = port.read_portfile(file_path)
+    local interface_amount = port.get_interface_amount(session_name)
 
     --nil if port.dat contains no valid number
     if target_port then
-        if current_port ~= target_port then
-            port.set_listening(session_name, target_interface, target_port)
+        if current_port ~= target_port or (replace_existing and interface_amount > 1) then
+            port.set_listening(session_name, target_interface, target_port, replace_existing)
         end
     else
         log.debug("Port-Forwarding-Updater: No port file or port found. Not setting anything.")
@@ -30,7 +31,7 @@ function porla.init()
     log.debug("Port-Forwarding-Updater Plugin Loaded. Performing initial check.")
     for _, v in ipairs(config) do
         --initial run on startup
-        checkport(v.session_name, v.listen_interface, v.path)
+        checkport(v.session_name, v.listen_interface, v.path, v.replace_existing)
 
         cron_jobs[v.session_name] = cron.schedule({
             expression = v.cron,
@@ -51,5 +52,3 @@ function porla.destroy()
         end
     end
 end
-
-
