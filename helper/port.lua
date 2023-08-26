@@ -8,7 +8,8 @@ end
 
 return {
     get_interface_amount = function(session_name)
-        local settings = sessions.settings.get(session_name)
+        local session = sessions.get(session_name)
+        local settings = session:settings()
         local listen_interfaces = settings.listen_interfaces
 
         if listen_interfaces == "" or nil then
@@ -20,7 +21,8 @@ return {
     end,
 
     get_listening = function(session_name, interface)
-        local settings = sessions.settings.get(session_name)
+        local session = sessions.get(session_name)
+        local settings = session:settings()
         local current_port = 0
         if is_ipv6(interface) then
             _, _, current_port = string.find(settings.listen_interfaces, interface.."%]%:(%d+)")
@@ -38,7 +40,8 @@ return {
             goto done
         end
 
-        local settings = sessions.settings.get(session_name)
+        local session = sessions.get(session_name)
+        local settings = session:settings()
 
         if replace_existing then
             if is_ipv6(interface) then
@@ -47,8 +50,8 @@ return {
                 settings.listen_interfaces = interface..":"..tostring(target_port)
             end
 
-            sessions.settings.set(session_name, settings)
-            local verify_settings = sessions.settings.get(session_name)
+            session:apply_settings(settings)
+            local verify_settings = session:settings()
             local s = verify_settings.listen_interfaces
             log.debug("Listening Interface(s) for session " .. session_name .. " set to: " .. s)
 
@@ -120,9 +123,9 @@ return {
         ::set_interfaces::
 
         settings.listen_interfaces = new_listen_interfaces
-        sessions.settings.set(session_name, settings)
+        session:apply_settings(settings)
 
-        local verify_settings = sessions.settings.get(session_name)
+        local verify_settings = session:settings()
         s = verify_settings.listen_interfaces
         log.debug("Listening Interface(s) for session " .. session_name .. " set to: " .. s)
 

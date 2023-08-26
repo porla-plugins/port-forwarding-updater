@@ -8,6 +8,8 @@ VPN Projects such as Gluetun will write the forwarded port number to a file and 
 
 The port is set when the plugin loads on porla startup as well as on a cron timer.
 
+This plugin requires Porla 0.35.1-beta.1+163 or newer. That is anything with PR #249 merged.
+
 ## Configuration
 
 The plugin is configured with Lua. The following is an example Lua
